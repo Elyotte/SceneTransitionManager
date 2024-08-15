@@ -22,6 +22,6 @@ public class BasicUi : MonoBehaviour
 
     void PlayAnimation()
     {
-        TransitionManager.ChangeScene(0);
+        TransitionManager.ChangeScene(1);
     }
 }

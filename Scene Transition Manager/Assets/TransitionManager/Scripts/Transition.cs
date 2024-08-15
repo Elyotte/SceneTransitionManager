@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Com.EliottTan.SceneTransitions
 {
@@ -11,43 +13,57 @@ namespace Com.EliottTan.SceneTransitions
     [RequireComponent(typeof(Animator))]
     public class Transition : MonoBehaviour
     {
-        public event Action onAnimationLoadState;
+        //Animator and triggers
         public Animator animator { get; private set; }
-        public string endAnimationTrigger { get; private set; } = "EndAnimation";
+        string startTrigger = "StartTrigger";
+        string endTrigger = "TriggerEnd";
 
-        public bool autoEndAnimation = true;
-        public bool isStartDone { get; private set; } = false;
+        float maxAnimationProgress = .9f;
+
+        bool startAnimationFinished = false;
+
+        public event Action<float> onAsyncLoadProgress;
+        public event Action onStartAnimationFinished;
 
         private void Awake()
         {
             animator = GetComponent<Animator>();
+            DontDestroyOnLoad(gameObject);
+            startAnimationFinished = false;
         }
 
-        /// <summary>
-        /// Is sent by animator when the screen is fully hidden by the transition
-        /// It is used for transition between screen, the canva will be set to true when EmitLoadState is called
-        /// </summary>
-        public void EmitLoadState()
+        public async void TransitionToNextScene(int pSceneIndex,LoadSceneMode pMode = LoadSceneMode.Single)
         {
-            onAnimationLoadState?.Invoke();
-            isStartDone = true; 
-            if (autoEndAnimation)
-                animator.SetTrigger(endAnimationTrigger);
-                
+            animator.SetTrigger(startTrigger);
+
+            while (!startAnimationFinished)
+            {
+                await Awaitable.WaitForSecondsAsync(Time.deltaTime);
+            }
+
+            AsyncOperation lNextScene = SceneManager.LoadSceneAsync(pSceneIndex,pMode);
+
+            lNextScene.allowSceneActivation = false;
+            while (lNextScene.progress < maxAnimationProgress)
+            {
+                onAsyncLoadProgress?.Invoke(lNextScene.progress);
+                await Awaitable.WaitForSecondsAsync(Time.deltaTime);
+            }
+
+            lNextScene.allowSceneActivation = true;
+            animator.SetTrigger(endTrigger);
         }
 
-        /// <summary>
-        /// Destroy the game object when the animation is done
-        /// </summary>
-        public void DestroyGameObject()
+        public void OnStartAnimationFinished()
+        {
+            onStartAnimationFinished?.Invoke();
+            startAnimationFinished = true;
+        }
+
+        public void OnEndAnimationFinished()
         {
             Destroy(gameObject);
         }
 
-        //Remove every callback of possibles instance that will not be destroyed
-        private void OnDestroy()
-        {
-            onAnimationLoadState = null;
-        }
     }
 }
