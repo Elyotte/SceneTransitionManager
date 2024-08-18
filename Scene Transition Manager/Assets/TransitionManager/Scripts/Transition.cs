@@ -10,7 +10,6 @@ namespace Com.EliottTan.SceneTransitions
     /// <summary>
     /// Component used to create transition between scenes or screens
     /// </summary>
-    [RequireComponent(typeof(Animator))]
     public class Transition : MonoBehaviour
     {
         //Animator and triggers

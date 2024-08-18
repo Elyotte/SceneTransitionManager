@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class BasicUi : MonoBehaviour
 {
     [SerializeField] Button playBtn, quitBtn;
+    [SerializeField] Transition transition;
 
     // Start is called before the first frame update
     void Start()
@@ -22,6 +23,6 @@ public class BasicUi : MonoBehaviour
 
     void PlayAnimation()
     {
-        TransitionManager.ChangeScene("BigHeavyScene");
+        TransitionManager.ChangeScene(transition,"BigHeavyScene");
     }
 }
