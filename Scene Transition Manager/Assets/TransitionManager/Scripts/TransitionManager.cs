@@ -53,6 +53,11 @@ namespace Com.EliottTan.SceneTransitions
             currentTransition.TransitionToNextScene(pSceneName, pLoadSceneMode);
         }
 
+        /// <summary>
+        /// Display a transition into a callback, the callback will be executed on the end of the starting animation
+        /// </summary>
+        /// <param name="pTransition">The transition you want to use</param>
+        /// <param name="pMethod">The method you want to call after the screen is fully hidden by the transition</param>
         static public void ShowTransition(Transition pTransition, Action pMethod)
         {
             Transition currentTransition = UObject.Instantiate(pTransition);
@@ -60,6 +65,10 @@ namespace Com.EliottTan.SceneTransitions
             currentTransition.TransitionToMethod();
         }
 
+        /// <summary>
+        /// Display a transition then call a method, using default transition
+        /// </summary>
+        /// <param name="pMethod">The method you want to call</param>
         static public void ShowTransition(Action pMethod)
         {
             ShowTransition(defaultTransition, pMethod);
