@@ -24,16 +24,13 @@ namespace Com.EliottTan.SceneTransitions
         public event Action<float> onAsyncLoadProgress;
         public event Action onStartAnimationFinished;
 
-        private void Awake()
-        {
-            animator = GetComponent<Animator>();
-            DontDestroyOnLoad(gameObject);
-            startAnimationFinished = false;
-        }
+        enum TransitionType { toScene, toMethod}
+        TransitionType transitionType;
 
         public async void TransitionToNextScene(int pSceneIndex,LoadSceneMode pMode = LoadSceneMode.Single)
         {
-            animator.SetTrigger(startTrigger);
+            transitionType = TransitionType.toScene;
+            StartAnimation();
 
             while (!startAnimationFinished)
             {
@@ -55,7 +52,7 @@ namespace Com.EliottTan.SceneTransitions
 
         public async void TransitionToNextScene(string pSceneName, LoadSceneMode pMode = LoadSceneMode.Single)
         {
-            animator.SetTrigger(startTrigger);
+            StartAnimation();
 
             while (!startAnimationFinished)
             {
@@ -75,14 +72,33 @@ namespace Com.EliottTan.SceneTransitions
             animator.SetTrigger(endTrigger);
         }
 
+        private void StartAnimation()
+        {
+            animator = GetComponent<Animator>();
+            DontDestroyOnLoad(gameObject);
+            startAnimationFinished = false;
+            animator.SetTrigger(startTrigger);
+        }
+
+        public void TransitionToMethod()
+        {
+            transitionType = TransitionType.toMethod;
+            StartAnimation();
+        }
+
         public void OnStartAnimationFinished()
         {
             onStartAnimationFinished?.Invoke();
             startAnimationFinished = true;
+            if (transitionType == TransitionType.toMethod)
+            {
+                animator.SetTrigger(endTrigger);
+            }
         }
 
         public void OnEndAnimationFinished()
         {
+            onStartAnimationFinished = null;
             Destroy(gameObject);
         }
 

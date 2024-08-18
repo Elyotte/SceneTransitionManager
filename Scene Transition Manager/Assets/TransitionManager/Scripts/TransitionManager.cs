@@ -1,5 +1,7 @@
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UObject = UnityEngine.Object;
 
 namespace Com.EliottTan.SceneTransitions
 {
@@ -35,7 +37,7 @@ namespace Com.EliottTan.SceneTransitions
         /// <param name="pLoadSceneMode">The load scene mode is in Single by default </param>
         static public void ChangeScene(Transition pTransition, int pSceneIndex, LoadSceneMode pLoadSceneMode = LoadSceneMode.Single)
         {
-            Transition currentTransition = Object.Instantiate(pTransition);
+            Transition currentTransition = UObject.Instantiate(pTransition);
             currentTransition.TransitionToNextScene(pSceneIndex, pLoadSceneMode);
         }
 
@@ -47,13 +49,20 @@ namespace Com.EliottTan.SceneTransitions
         /// <param name="pLoadSceneMode">The load scene mode is in Single by default</param>
         static public void ChangeScene(Transition pTransition, string pSceneName, LoadSceneMode pLoadSceneMode = LoadSceneMode.Single)
         {
-            Transition currentTransition = Object.Instantiate(pTransition);
+            Transition currentTransition = UObject.Instantiate(pTransition);
             currentTransition.TransitionToNextScene(pSceneName, pLoadSceneMode);
         }
 
-        static public void ShowTransition()
+        static public void ShowTransition(Transition pTransition, Action pMethod)
         {
+            Transition currentTransition = UObject.Instantiate(pTransition);
+            currentTransition.onStartAnimationFinished += pMethod;
+            currentTransition.TransitionToMethod();
+        }
 
+        static public void ShowTransition(Action pMethod)
+        {
+            ShowTransition(defaultTransition, pMethod);
         }
     }
 }
