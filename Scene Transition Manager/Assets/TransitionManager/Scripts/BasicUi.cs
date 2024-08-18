@@ -22,6 +22,6 @@ public class BasicUi : MonoBehaviour
 
     void PlayAnimation()
     {
-        TransitionManager.ChangeScene(1);
+        TransitionManager.ChangeScene("BigHeavyScene");
     }
 }

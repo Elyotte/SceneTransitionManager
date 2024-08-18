@@ -54,6 +54,28 @@ namespace Com.EliottTan.SceneTransitions
             animator.SetTrigger(endTrigger);
         }
 
+        public async void TransitionToNextScene(string pSceneName, LoadSceneMode pMode = LoadSceneMode.Single)
+        {
+            animator.SetTrigger(startTrigger);
+
+            while (!startAnimationFinished)
+            {
+                await Awaitable.WaitForSecondsAsync(Time.deltaTime);
+            }
+
+            AsyncOperation lNextScene = SceneManager.LoadSceneAsync(pSceneName, pMode);
+
+            lNextScene.allowSceneActivation = false;
+            while (lNextScene.progress < maxAnimationProgress)
+            {
+                onAsyncLoadProgress?.Invoke(lNextScene.progress);
+                await Awaitable.WaitForSecondsAsync(Time.deltaTime);
+            }
+
+            lNextScene.allowSceneActivation = true;
+            animator.SetTrigger(endTrigger);
+        }
+
         public void OnStartAnimationFinished()
         {
             onStartAnimationFinished?.Invoke();

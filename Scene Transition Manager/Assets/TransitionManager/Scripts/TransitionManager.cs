@@ -12,5 +12,11 @@ namespace Com.EliottTan.SceneTransitions
             Transition currentTransition = Object.Instantiate(defaultTransition).GetComponent<Transition>();
             currentTransition.TransitionToNextScene(pSceneIndex);
         }
+
+        static public void ChangeScene(string pSceneNName, LoadSceneMode pLoadSceneMode = LoadSceneMode.Single)
+        {
+            Transition currentTransition = Object.Instantiate(defaultTransition).GetComponent<Transition>();
+            currentTransition.TransitionToNextScene(pSceneNName, pLoadSceneMode);
+        }
     }
 }
